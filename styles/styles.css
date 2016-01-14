@@ -173,6 +173,12 @@
     font-family: sans-serif;
 }
 
+.outline-entry-coffee.outline-entry-class:before {
+    color: #f47b22;
+    content: "\f318";
+    font-family: Ionicons;
+}
+
 
 /* CSS */
 .outline-entry-css-tag:before {

@@ -3,14 +3,15 @@ define(function (require, exports, module) {
 
     var unnamedPlaceholder = "→";
 
-    function _getVisibilityClass(name) {
+    function _getVisibilityClass(name, is_class) {
+        if (is_class) return " outline-entry-class";
         if (name === unnamedPlaceholder) {
             return " outline-entry-unnamed";
         }
         return " outline-entry-" + (name[0] === "_" ? "private" : "public");
     }
 
-    function _createListEntry(name, args, line, ch) {
+    function _createListEntry(name, args, line, ch, is_class) {
         var $elements = [];
         var $name = $(document.createElement("span"));
         $name.addClass("outline-entry-name");
@@ -24,7 +25,7 @@ define(function (require, exports, module) {
             name: name,
             line: line,
             ch: ch,
-            classes: "outline-entry-coffee outline-entry-icon" + _getVisibilityClass(name),
+            classes: "outline-entry-coffee outline-entry-icon" + _getVisibilityClass(name, is_class),
             $html: $elements
         };
     }
@@ -39,6 +40,7 @@ define(function (require, exports, module) {
     function getOutlineList(text, showArguments, showUnnamed) {
         var lines = text.split("\n");
         var regex = /(([\w\$]*)?\s*(?:=|:))?\s*(\([\w\$@,.'"= ]*\))?\s*(?:->|=>)/g;
+        var regex2 = /class\s+(\w+)/g;
         var result = [];
         lines.forEach(function (line, index) {
             var match = regex.exec(line);
@@ -54,6 +56,10 @@ define(function (require, exports, module) {
                     }
                 }
                 result.push(_createListEntry(name, args, index, line.length));
+            }
+            var match2 = regex2.exec(line);
+            if (match2) {
+                result.push(_createListEntry(match2[1], null, index, line.length, true));
             }
         });
         return result;
